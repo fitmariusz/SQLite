@@ -233,6 +233,31 @@ def update_profile(cur):
     cur.connection.commit()
 
 
+def delete_profile(cur):
+    print("\033cDelete Profile selected")
+    view_all_profiles(cur)
+    index = input("Enter the profile index of the profile you want to delete: ")
+    cur.execute(f"SELECT * FROM profiles WHERE profile_index_sap='{index}'")
+    rows = cur.fetchall()
+    if rows == []:
+        print(f"\033c\033[91mNo profiles found with index '{index}'.\033[0m")
+        input("Press Enter to return to the view menu...")
+        return
+    else:
+        print(f"\033cProfiles with index '{index}':")
+        for row in rows:
+            print("\033[93m" + str(row) + "\033[0m")
+    confirm = input(
+        f"Are you sure you want to delete profile with index '{index}'? (y/n): "
+    )
+    if confirm.lower() == "y":
+        cur.execute(f"DELETE FROM profiles WHERE profile_index_sap='{index}'")
+        cur.connection.commit()
+        print(f"Profile with index '{index}' has been deleted.")
+    else:
+        print("Deletion cancelled.")
+
+
 def menu():
     print("\033cMain Menu:")
     print("1. Add Profile")
@@ -262,7 +287,7 @@ def main():
             case "3":
                 update_profile(cur)
             case "4":
-                print("Delete Profile selected")
+                delete_profile(cur)
             case "5":
                 print("Exiting...")
                 break
