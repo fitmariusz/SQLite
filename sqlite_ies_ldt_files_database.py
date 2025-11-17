@@ -1,5 +1,7 @@
 import sqlite3
 
+from SQlite import query_add_profile
+
 Sqlite_db = "ies_ldt_files.db"
 
 
@@ -71,18 +73,19 @@ def create_tables(conn):
     #     print(e)
 
 
-def add_profile(cur):
-    print("\033cAdding profile:")
+def menu_add_profile():
+    print("\033cAdd Profile selected")
     index = input("Index profile in SAP: ")
     name = input("Profile name: ")
     width = input("Width (mm):")
     height = input("Height (mm):")
     colors = input("Colors (RAL): ")
-    cur.execute(
-        f"INSERT INTO profiles VALUES('{index}', '{name}', {width}, {height}, '{colors}')"
-    )
-    # cur.execute(f"INSERT INTO profiles VALUES('s', 'rffre', 1.2, 2.2, 'fsfse')")
-    cur.connection.commit()
+    return index, name, width, height, colors
+
+
+def add_profile(cur):
+    index, name, width, height, colors = menu_add_profile()
+    query_add_profile(cur, index, name, width, height, colors)
 
 
 def view_menu(cur):
@@ -90,11 +93,11 @@ def view_menu(cur):
     while choice != "7":
         print("\033cView Profiles - please select for :")
         print("1. All Profiles")
-        print("2. By Index (Not implemented)")
-        print("3. By Name (Not implemented)")
-        print("4. By Width (Not implemented)")
-        print("5. By Height (Not implemented)")
-        print("6. By Colors (Not implemented)")
+        print("2. By Index SAP")
+        print("3. By Name")
+        print("4. By Width")
+        print("5. By Height")
+        print("6. By Colors")
         print("7. Return to Main Menu")
         choice = input("Select an option: ")
         match choice:
@@ -125,10 +128,15 @@ def view_all_profiles(cur):
     input("Press Enter to return to the main menu...")
 
 
-def view_profiles_by_index(cur):
-    index = input("\033cEnter profile index to search: ")
+def query_profiles_by_index(cur, index):
     cur.execute(f"SELECT * FROM profiles WHERE profile_index_sap='{index}'")
     rows = cur.fetchall()
+    return rows
+
+
+def view_profiles_by_index(cur):
+    index = input("\033cEnter profile index to search: ")
+    rows = query_profiles_by_index(cur, index)
     if rows == []:
         print(f"\033c\033[91mNo profiles found with index '{index}'.\033[0m")
         input("Press Enter to return to the view menu...")
@@ -140,10 +148,15 @@ def view_profiles_by_index(cur):
         input("Press Enter to return to the view menu...")
 
 
-def view_profiles_by_name(cur):
-    name = input("\033cEnter profile name to search: ")
+def query_profiles_by_name(cur, name):
     cur.execute(f"SELECT * FROM profiles WHERE profile_name='{name}'")
     rows = cur.fetchall()
+    return rows
+
+
+def view_profiles_by_name(cur):
+    name = input("\033cEnter profile name to search: ")
+    rows = query_profiles_by_name(cur, name)
     if rows == []:
         print(f"\033c\033[91mNo profiles found with name '{name}'.\033[0m")
         input("Press Enter to return to the view menu...")
@@ -155,10 +168,15 @@ def view_profiles_by_name(cur):
         input("Press Enter to return to the view menu...")
 
 
-def view_profiles_by_width(cur):
-    width = input("\033cEnter profile width to search: ")
+def query_profiles_by_width(cur, width):
     cur.execute(f"SELECT * FROM profiles WHERE width={width}")
     rows = cur.fetchall()
+    return rows
+
+
+def view_profiles_by_width(cur):
+    width = input("\033cEnter profile width to search: ")
+    rows = query_profiles_by_width(cur, width)
     if rows == []:
         print(f"\033c\033[91mNo profiles found with width '{width}'.\033[0m")
         input("Press Enter to return to the view menu...")
@@ -170,10 +188,15 @@ def view_profiles_by_width(cur):
         input("Press Enter to return to the view menu...")
 
 
-def view_profiles_by_height(cur):
-    height = input("\033cEnter profile height to search: ")
+def query_profiles_by_height(cur, height):
     cur.execute(f"SELECT * FROM profiles WHERE hight={height}")
     rows = cur.fetchall()
+    return rows
+
+
+def view_profiles_by_height(cur):
+    height = input("\033cEnter profile height to search: ")
+    rows = query_profiles_by_height(cur, height)
     if rows == []:
         print(f"\033c\033[91mNo profiles found with height '{height}'.\033[0m")
         input("Press Enter to return to the view menu...")
@@ -185,10 +208,15 @@ def view_profiles_by_height(cur):
         input("Press Enter to return to the view menu...")
 
 
-def view_profiles_by_colors(cur):
-    colors = input("\033cEnter profile colors to search: ")
+def query_profiles_by_colors(cur, colors):
     cur.execute(f"SELECT * FROM profiles WHERE colors='{colors}'")
     rows = cur.fetchall()
+    return rows
+
+
+def view_profiles_by_colors(cur):
+    colors = input("\033cEnter profile colors to search: ")
+    rows = query_profiles_by_colors(cur, colors)
     if rows == []:
         print(f"\033c\033[91mNo profiles found with colors '{colors}'.\033[0m")
         input("Press Enter to return to the view menu...")
