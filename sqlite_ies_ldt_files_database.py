@@ -1,6 +1,15 @@
 import sqlite3
 
-from SQlite import query_add_profile
+from SQlite import (
+    query_add_profile,
+    query_profiles_by_index,
+    query_profiles_by_name,
+    query_profiles_by_width,
+    query_profiles_by_height,
+    query_profiles_by_colors,
+    query_update_profile,
+    query_delete_profile,
+)
 
 Sqlite_db = "ies_ldt_files.db"
 
@@ -128,12 +137,6 @@ def view_all_profiles(cur):
     input("Press Enter to return to the main menu...")
 
 
-def query_profiles_by_index(cur, index):
-    cur.execute(f"SELECT * FROM profiles WHERE profile_index_sap='{index}'")
-    rows = cur.fetchall()
-    return rows
-
-
 def view_profiles_by_index(cur):
     index = input("\033cEnter profile index to search: ")
     rows = query_profiles_by_index(cur, index)
@@ -146,12 +149,6 @@ def view_profiles_by_index(cur):
         for row in rows:
             print("\033[92m" + str(row) + "\033[0m")
         input("Press Enter to return to the view menu...")
-
-
-def query_profiles_by_name(cur, name):
-    cur.execute(f"SELECT * FROM profiles WHERE profile_name='{name}'")
-    rows = cur.fetchall()
-    return rows
 
 
 def view_profiles_by_name(cur):
@@ -168,12 +165,6 @@ def view_profiles_by_name(cur):
         input("Press Enter to return to the view menu...")
 
 
-def query_profiles_by_width(cur, width):
-    cur.execute(f"SELECT * FROM profiles WHERE width={width}")
-    rows = cur.fetchall()
-    return rows
-
-
 def view_profiles_by_width(cur):
     width = input("\033cEnter profile width to search: ")
     rows = query_profiles_by_width(cur, width)
@@ -188,12 +179,6 @@ def view_profiles_by_width(cur):
         input("Press Enter to return to the view menu...")
 
 
-def query_profiles_by_height(cur, height):
-    cur.execute(f"SELECT * FROM profiles WHERE hight={height}")
-    rows = cur.fetchall()
-    return rows
-
-
 def view_profiles_by_height(cur):
     height = input("\033cEnter profile height to search: ")
     rows = query_profiles_by_height(cur, height)
@@ -206,12 +191,6 @@ def view_profiles_by_height(cur):
         for row in rows:
             print("\033[92m" + str(row) + "\033[0m")
         input("Press Enter to return to the view menu...")
-
-
-def query_profiles_by_colors(cur, colors):
-    cur.execute(f"SELECT * FROM profiles WHERE colors='{colors}'")
-    rows = cur.fetchall()
-    return rows
 
 
 def view_profiles_by_colors(cur):
@@ -255,10 +234,7 @@ def update_profile(cur):
     new_colors = input(f"New Colors (RAL) ({rows[0][4]}): ")
     if new_colors == "":
         new_colors = rows[0][4]
-    cur.execute(
-        f"UPDATE profiles SET profile_name='{new_name}', width={new_width}, hight={new_height}, colors='{new_colors}' WHERE profile_index_sap='{index}'"
-    )
-    cur.connection.commit()
+    query_update_profile(cur, index, new_name, new_width, new_height, new_colors)
 
 
 def delete_profile(cur):
@@ -279,8 +255,7 @@ def delete_profile(cur):
         f"Are you sure you want to delete profile with index '{index}'? (y/n): "
     )
     if confirm.lower() == "y":
-        cur.execute(f"DELETE FROM profiles WHERE profile_index_sap='{index}'")
-        cur.connection.commit()
+        query_delete_profile(cur, index)
         print(f"Profile with index '{index}' has been deleted.")
     else:
         print("Deletion cancelled.")
